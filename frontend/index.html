@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Booking System</title>
+</head>
+<body>
+
+<h1>Available Slots</h1>
+
+<ul id="slots"></ul>
+
+<script>
+console.log("SCRIPT LOADED");
+
+async function loadSlots() {
+  try {
+    console.log("CALLING API...");
+
+    const res = await fetch('http://localhost:3000/slots');
+    const data = await res.json();
+
+    console.log('DATA:', data);
+
+    const list = document.getElementById('slots');
+    list.innerHTML = '';
+
+    data.forEach(slot => {
+      const li = document.createElement('li');
+
+      li.innerHTML = `
+        ${slot.start_time} - ${slot.end_time}
+        <button onclick="bookSlot(${slot.id})">Book</button>
+      `;
+
+      list.appendChild(li);
+    });
+  } catch (err) {
+    console.error('ERROR:', err);
+  }
+}
+
+async function bookSlot(slotId) {
+  await fetch('http://localhost:3000/book', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ user_id: 1, slot_id: slotId })
+  });
+
+  loadSlots();
+}
+
+loadSlots();
+</script>
+
+</body>
+</html>
