@@ -2,56 +2,174 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Booking System</title>
+  <title>Accessible Booking System</title>
+
+  <style>
+    /* Toast (improved) */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #28a745;
+      color: white;
+      padding: 12px 18px;
+      border-radius: 8px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s ease;
+      font-size: 14px;
+      z-index: 1000;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Full screen loader */
+    .loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255,255,255,0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+
+    .loader::after {
+      content: "";
+      border: 5px solid #eee;
+      border-top: 5px solid #007bff;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Layout */
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      margin: 0;
+      padding: 40px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 5px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 25px;
+      font-size: 14px;
+    }
+
+    .search-box {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 25px;
+      font-size: 14px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      background: white;
+      margin-bottom: 15px;
+      padding: 15px 20px;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+      transition: transform 0.2s;
+    }
+
+    li:hover {
+      transform: translateY(-2px);
+    }
+
+    .time {
+      font-size: 14px;
+      color: #555;
+    }
+
+    /* Button animation */
+    button {
+      padding: 8px 14px;
+      border: none;
+      background: #28a745;
+      color: white;
+      cursor: pointer;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: all 0.2s ease;
+    }
+
+    button:hover {
+      background: #218838;
+      transform: scale(1.05);
+    }
+
+    .empty {
+      text-align: center;
+      color: #888;
+      margin-top: 20px;
+    }
+  </style>
+
 </head>
 <body>
 
-<h1>Available Slots</h1>
+<!-- Toast -->
+<div id="toast" class="toast"></div>
 
-<ul id="slots"></ul>
+<!-- Loader -->
+<div id="loader" class="loader hidden"></div>
 
-<script>
-console.log("SCRIPT LOADED");
+<div class="container">
 
-async function loadSlots() {
-  try {
-    console.log("CALLING API...");
+  <h1>📅 Accessible Booking System</h1>
+  <p class="subtitle">Book your preferred time slots بسهولة</p>
 
-    const res = await fetch('http://localhost:3000/slots');
-    const data = await res.json();
+  <input 
+    class="search-box"
+    type="text" 
+    placeholder="🔍 Search slots..." 
+    oninput="handleSearch(this.value)" 
+  />
 
-    console.log('DATA:', data);
+  <ul id="slots"></ul>
 
-    const list = document.getElementById('slots');
-    list.innerHTML = '';
+</div>
 
-    data.forEach(slot => {
-      const li = document.createElement('li');
-
-      li.innerHTML = `
-        ${slot.start_time} - ${slot.end_time}
-        <button onclick="bookSlot(${slot.id})">Book</button>
-      `;
-
-      list.appendChild(li);
-    });
-  } catch (err) {
-    console.error('ERROR:', err);
-  }
-}
-
-async function bookSlot(slotId) {
-  await fetch('http://localhost:3000/book', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ user_id: 1, slot_id: slotId })
-  });
-
-  loadSlots();
-}
-
-loadSlots();
-</script>
+<script src="app.js"></script>
 
 </body>
 </html>
