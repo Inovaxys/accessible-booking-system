@@ -25,3 +25,6 @@ This project demonstrates implementation aligned with mitigation plan requiremen
 
 ## 🚀 Outcome
 Improved performance, accessibility, and maintainability aligned with mitigation plan.
+
+## 📸 Demo
+![Booking System](screenshot.png)
