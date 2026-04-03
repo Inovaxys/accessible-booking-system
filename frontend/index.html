@@ -5,7 +5,6 @@
   <title>Accessible Booking System</title>
 
   <style>
-    /* Toast (improved) */
     .toast {
       position: fixed;
       bottom: 20px;
@@ -26,7 +25,6 @@
       transform: translateY(0);
     }
 
-    /* Full screen loader */
     .loader {
       position: fixed;
       top: 0;
@@ -59,7 +57,6 @@
       100% { transform: rotate(360deg); }
     }
 
-    /* Layout */
     body {
       font-family: Arial, sans-serif;
       background: #f5f7fa;
@@ -120,7 +117,6 @@
       color: #555;
     }
 
-    /* Button animation */
     button {
       padding: 8px 14px;
       border: none;
@@ -143,33 +139,43 @@
       margin-top: 20px;
     }
   </style>
-
 </head>
+
 <body>
 
 <!-- Toast -->
-<div id="toast" class="toast"></div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
 
 <!-- Loader -->
-<div id="loader" class="loader hidden"></div>
+<div id="loader" class="loader hidden" aria-hidden="true"></div>
 
 <div class="container">
 
   <h1>📅 Accessible Booking System</h1>
   <p class="subtitle">Book your preferred time slots بسهولة</p>
 
+  <label for="booking-date">Select Booking Date:</label>
+  <input 
+    id="booking-date"
+    class="booking-date search-box"
+    type="date"
+    aria-required="true"
+  />
+
   <input 
     class="search-box"
     type="text" 
     placeholder="🔍 Search slots..." 
     oninput="handleSearch(this.value)" 
+    aria-label="Search available booking slots"
   />
 
-  <ul id="slots"></ul>
+  <ul id="slots" role="list" aria-live="polite"></ul>
 
 </div>
 
 <script src="app.js"></script>
+<script src="frontend/ia-custom-control.js"></script>
 
 </body>
 </html>
