@@ -1,80 +1,54 @@
-console.log('THIS IS MY SERVER FILE');
-
 const express = require('express');
-const cors = require('cors');
-const pool = require('./db');
-
 const app = express();
-app.use(cors());
+
 app.use(express.json());
 
-// Root route
-app.get('/', (req, res) => {
-  res.send('Server is running');
-});
-
-// 🔍 Get available slots (with optional search)
-app.get('/slots', async (req, res) => {
-  const { search } = req.query;
-
+// API: Get bookings by date
+app.get('/api/bookings', (req, res) => {
   try {
-    let query = 'SELECT * FROM slots WHERE is_booked = false';
-    let values = [];
+    const { date } = req.query;
 
-    // If search is provided → filter by time
-    if (search) {
-      query += ' AND start_time::text ILIKE $1';
-      values.push(`%${search}%`);
+    // Validation: check if date is provided
+    if (!date) {
+      return res.status(400).json({
+        success: false,
+        error: 'Date is required'
+      });
     }
 
-    const result = await pool.query(query, values);
-    res.json(result.rows);
-
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Error fetching slots' });
-  }
-});
-
-// 📌 Book a slot (safe)
-app.post('/book', async (req, res) => {
-  const { user_id, slot_id } = req.body;
-
-  try {
-    // Prevent double booking
-    const update = await pool.query(
-      'UPDATE slots SET is_booked = true WHERE id = $1 AND is_booked = false RETURNING *',
-      [slot_id]
-    );
-
-    if (update.rowCount === 0) {
-      return res.status(400).json({ message: 'Slot already booked' });
+    // Validation: check if date is valid
+    const parsedDate = new Date(date);
+    if (isNaN(parsedDate)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid date format'
+      });
     }
 
-    await pool.query(
-      'INSERT INTO bookings (user_id, slot_id) VALUES ($1, $2)',
-      [user_id, slot_id]
-    );
+    // Mock data (simulate DB response)
+    const bookings = [
+      { id: 1, time: '10:00 AM', status: 'Available' },
+      { id: 2, time: '11:00 AM', status: 'Booked' }
+    ];
 
-    res.json({ message: 'Booking successful' });
+    // Success response
+    res.status(200).json({
+      success: true,
+      message: `Bookings for ${date}`,
+      data: bookings
+    });
 
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Booking failed' });
+  } catch (error) {
+    // Error handling
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error'
+    });
   }
 });
 
-// 📌 Get all bookings (extra endpoint)
-app.get('/bookings', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT * FROM bookings');
-    res.json(result.rows);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Error fetching bookings' });
-  }
-});
-
-app.listen(3000, () => {
-  console.log('Server running on port 3000');
+// Start server
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });
